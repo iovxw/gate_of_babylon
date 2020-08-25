@@ -5,7 +5,6 @@ use <threadlib/threadlib.scad>
 $fn = 200;
 
 spool_bolt();
-
 // spool_nut();
 
 module spool_nut(nut_height = 70) {
@@ -20,14 +19,21 @@ module spool_nut(nut_height = 70) {
 }
 
 module spool_bolt() {
-    intersection() {
-        translate([0, 0, -5]) cylinder(h=5, d=53+10, $fn=6);
-        translate([0, 0, 20]) sphere(d=53+10+10);
-    }
-    
     specs = thread_specs("G1 1/4-ext");
     P = specs[0]; Rrot = specs[1]; Dsupport = specs[2];
     section_profile = specs[3];
     echo(Dsupport);
-    translate([0, 0, P/2]) bolt("G1 1/4", turns=1);
+    
+    difference() {
+        union() {
+            translate([0, 0, P/2]) bolt("G1 1/4", turns=2.5);
+            
+            intersection() {
+                translate([0, 0, -5]) cylinder(h=5, d=53+10, $fn=6);
+                translate([0, 0, 25]) sphere(d=53+10+20);
+            }
+        }
+        cylinder(d=Dsupport-2, h=100, center=true);
+    }
+
 }
