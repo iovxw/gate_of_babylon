@@ -4,6 +4,9 @@
 ## hex_key_holder
 ![preview](hex_key_holder/preview.png)
 
+## bowden_clamp
+![preview](bowden_clamp/preview.png)
+
 ## huawei\_gt\_charger\_stand
 ![preview](huawei_gt_charger_stand/preview.png)
 
