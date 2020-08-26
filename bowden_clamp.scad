@@ -14,7 +14,7 @@ module a() {
             
             cylinder(d1=10, d2=14, h=2);
             translate([0, 0, 2]) knurl(k_cyl_hg=3, k_cyl_od=15, s_smooth=30, e_smooth=0.5,
-                 knurl_wd=2, knurl_hg=3);
+                 knurl_wd=4, knurl_hg=3);
             
             a_top_bolt();
             
@@ -56,7 +56,7 @@ module b() {
             union() {
                 translate([0, 0, -2*P-P])
                     knurl(k_cyl_hg=2*P+P+2, k_cyl_od=15, s_smooth=30, e_smooth=0.5,
-                        knurl_wd=2, knurl_hg=3);
+                        knurl_wd=4, knurl_hg=3);
             }
             cylinder(d=4+0.5, h=100);
             translate([0, 0, -2*P-P]) cylinder(h=2*P+P, d=Dsupport);
