@@ -7,6 +7,9 @@
 ## bowden_clamp
 ![preview](bowden_clamp/preview.png)
 
+## bowden_clamp2
+![preview](bowden_clamp2/preview.png)
+
 ## huawei\_gt\_charger\_stand
 ![preview](huawei_gt_charger_stand/preview.png)
 
