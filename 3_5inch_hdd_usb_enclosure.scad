@@ -26,10 +26,19 @@ y_thickness = 5 - ($jms578__cable_y - 7.1/2);
 y_size = $jms578__pcb[1] + $jms578__sata[1] + y_thickness;
 power_hole_d = 8;
 
+//echo($hdd__length + y_size);
+// 101.5
+// 146
+// 167.4
+
 /****** ******/
-//part_a();
+part_a();
 //part_b();
-part_c();
+//part_c();
+//some_extra_parts_a(bottom = true);
+//some_extra_parts_a(brim_r = 5.5);
+//some_extra_parts_a();
+//some_extra_parts_c();
 /****** ******/
 
 module part_a() adapter_box("top");
@@ -197,37 +206,109 @@ module hdd_void() {
     translate([0, a[8] + a[9], 0]) right_screw();
 }
 
-module hdd_mount() {
+module some_extra_parts_a(brim_r = 0, brim_distance = 0.05, brim_h = 2, bottom = false) {
     a = $hdd__a;
-    width = $hdd__width;
-    length = $hdd__length;
-    height = $hdd__height;
     
-    x_thickness = 3;
-    y_thickness = 3;
-    locator_thickness = 1;
-    rubber_feet_d = 8 + 0.2;
-    rubber_feet_h = 0.7;
-
-    module foot() translate([10/2-x_thickness, 0, 0]) difference() {
-        hull() {
-            translate([10/2, 0, a[10]]) rotate([0, -90, 0]) cylinder(d = 10, h = 10, $fn = 80);
-            translate([0, 0, -y_thickness]) cylinder(d = 10, h = 1, $fn = 100);
-        }
-        translate([0, 0, -y_thickness]) cylinder(d = rubber_feet_d, h = rubber_feet_h, $fn = 50);
+    foot_h = 3;
+    foot_a_depth = 0.5;
+    foot_b_depth = 2;
+    foot_thickness = 1;
+    h = 2;
+    length = 146;
+    width = 101.5;
+    hdd_top_box_top_diff = 5.8;
+    box_hand_thickness = 1;
+    box_hand_y_fix = 0;//-1;
+    
+    module body() hull() {
+        translate([(width-7)/2-foot_thickness, -foot_thickness])
+            square([7+foot_thickness*2, 3+foot_thickness*2]);
+        translate([-foot_thickness, length-5-foot_thickness])
+            square([5+foot_thickness*2, 5+foot_thickness*2]);
+        translate([width-5-foot_thickness, length-5-foot_thickness])
+            square([5+foot_thickness*2, 5+foot_thickness*2]);
     }
-
-    difference() {
-        union() {
-            /*translate([-locator_thickness, -locator_thickness, -y_thickness])
-                cube([5, 5, 1 + 5]);
-            translate([0, 0, -y_thickness]) cube([5 - locator_thickness, y_size + a[8] -10/2, 5]);
-            */
-            translate([0, y_size]) translate([0, a[8], 0]) foot();
-            //translate([0, y_size]) translate([0, a[8] + a[9], 0]) foot();
-            //translate([0, y_size]) translate([width, a[8], 0]) mirror([1, 0]) foot();
+    
+    module screws() {
+        $fn=6;
+        translate([width/2, 3/2, 0])
+            cylinder(d = 3, h = 99);
+        translate([5/2, length-5/2, 0])
+            cylinder(d = 3, h = 99);
+        translate([width-5/2, length-5/2, 0])
+            cylinder(d = 3, h = 99);
+    }
+    
+    if (bottom) {
+        translate([0, 0, foot_h+h-0.5]) linear_extrude(height = 0.5)
+            offset(delta = -(7-h)/2) body();
+    } else {
+        translate([0, 0, foot_h]) linear_extrude(height = h) difference() {
+            //offset(delta = -(7-h)/2) body();
+            //offset(delta = -(7-h)/2-h) body();
         }
-        #translate([0, y_size]) hdd_void();
-        #hull() adapter_box("bottom");
+        difference() {
+            union() {
+                translate([(width-7)/2-foot_thickness, -foot_thickness, -foot_a_depth])
+                    cube([7+foot_thickness*2, 3+foot_thickness*2, foot_h+h+foot_a_depth]);
+                translate([-foot_thickness, length-5-foot_thickness, -foot_b_depth])
+                    cube([5+foot_thickness*2, 5+foot_thickness*2, foot_h+h+foot_b_depth]);
+                translate([width-5-foot_thickness, length-5-foot_thickness, -foot_b_depth])
+                    cube([5+foot_thickness*2, 5+foot_thickness*2, foot_h+h+foot_b_depth]);
+            }
+            
+            translate([(width-7)/2, 0, -foot_a_depth]) cube([7, 3, foot_a_depth]);
+            translate([0, length-5, -foot_b_depth]) cube([5, 5, foot_b_depth]);
+            translate([width-5, length-5, -foot_b_depth]) cube([5, 5, foot_b_depth]);
+            
+            translate([0, 0, 2]) screws();
+        }
+        difference() {
+            translate([0, 0, -5]) {
+            translate([(width-7)/2-foot_thickness, -foot_thickness, 0])
+                    cube([7+foot_thickness*2, 3+foot_thickness*2, 5]);
+                translate([-foot_thickness, length-5-foot_thickness, 0])
+                    cube([5+foot_thickness*2, 5+foot_thickness*2, 5]);
+                translate([width-5-foot_thickness, length-5-foot_thickness, 0])
+                    cube([5+foot_thickness*2, 5+foot_thickness*2, 5]);
+            }
+            #translate([0, 0, -a[1]]) cube([width, length, a[1]]);
+        }
+        
+        // BOX HAND
+        translate([(width-7)/2-foot_thickness, 0])
+            rotate([0, 0, 90]) rotate([90, 0])
+            linear_extrude(height = 7 + 1*2) 
+            polygon([[-foot_thickness, foot_h+h], [-y_size - box_hand_thickness, -hdd_top_box_top_diff + box_hand_thickness],
+                    [-y_size - box_hand_thickness - box_hand_y_fix, -hdd_top_box_top_diff - height -box_hand_thickness],
+                    [-y_size + 5, -hdd_top_box_top_diff - height - box_hand_thickness - box_hand_y_fix/4],
+                    [-y_size + 5, -hdd_top_box_top_diff - height - box_hand_y_fix/4],
+                    [-y_size - box_hand_y_fix, -hdd_top_box_top_diff - height],
+                    [-y_size, -hdd_top_box_top_diff], [0, foot_h+h-3]]);
+    }
+    
+    module base() projection(cut = false) some_extra_parts_a();
+    if (brim_r > 0) {
+        translate([0, 0, foot_h + h - brim_h]) linear_extrude(height = brim_h) difference() {
+            union() {
+                translate([width/2, 0]) intersection() {
+                    circle(r = brim_r);
+                    translate([-brim_r, -brim_r*2+(3+1)]) square([brim_r*2, brim_r*2]);
+                }
+                translate([0, length]) circle(r = brim_r);
+                translate([width, length]) circle(r = brim_r);
+            }
+            
+            offset(delta = brim_distance) base();
+        }
+    }
+}
+
+module some_extra_parts_c() {
+    a = $hdd__a;
+    
+    difference() {
+        translate([0, -5, -5]) cube([10, $hdd__length + y_size + 5* 2,5+15]);
+        cube([10, $hdd__length + y_size,999]);
     }
 }
