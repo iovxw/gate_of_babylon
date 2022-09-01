@@ -17,7 +17,39 @@ $fn = 100;
 
 //main();
 
-part_g();
+part_x();
+
+module part_x() {
+    thickness = 5;
+    port_d = in_d + 2*2;
+    port_h = 10;
+    
+    length = 80;
+    
+    difference() {
+        linear_extrude(height = outer) polygon([[0, 0], [length, 30/2], [0, 30]]);
+        
+        translate([thickness, 0, thickness]) cube([length-thickness*2, 30, outer-thickness*2]);
+
+        translate([0, 30/2, outer / 2]) rotate([0, 90, 0])
+                cylinder(d = port_d, h = port_h+thickness);
+    }
+}
+
+module part_h() {
+    thickness = 0.8;
+    port_d = in_d + 2*2;
+    port_h = 10;
+    difference() {
+        union() {
+            translate([-thickness, -thickness, -thickness]) 
+                cube([130, outer, 1]);
+            cube([130, outer, 5] - [thickness*2, thickness*2, 0]);
+        }
+        translate([thickness, thickness, -thickness])
+            cube([130, outer, 9.999] - [thickness*4, thickness*4, 0]);
+    }
+}
 
 module part_g() {
     thickness = 0.8;
