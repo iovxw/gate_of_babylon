@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "my-printer"
+version = "0.1.0"
+description = ""
+authors = ["iovxw <iovxw@outlook.com>"]
+readme = "README.md"
+packages = [{include = "my_printer"}]
+
+[tool.poetry.dependencies]
+python = "~3.10"
+cadquery = "2.2.0b2"
+jupyter-cadquery-widgets = "^2.0.2"
+casadi = {version = "^3.5.6rc2", allow-prereleases = true}
+jupyter-cadquery = {version = "^3.4.0", allow-prereleases = true}
+cad-viewer-widget = {version = "^1.4.0", allow-prereleases = true}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
