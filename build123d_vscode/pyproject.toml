@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "build123d-vscode"
+version = "0.1.0"
+description = ""
+authors = ["iovxw <iovxw@outlook.com>"]
+readme = "README.md"
+packages = [{include = "build123d_vscode"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+ocp-vscode = "0.30.0"
+build123d = {git = "https://github.com/gumyr/build123d.git"}
+
+
+[tool.poetry.group.dev.dependencies]
+autopep8 = "^2.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
