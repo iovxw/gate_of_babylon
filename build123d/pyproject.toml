@@ -7,19 +7,17 @@ readme = "README.md"
 #packages = [{include = "x"}]
 
 [tool.poetry.dependencies]
-python = "~3.10"
+python = "^3.11"
 jupyter-cadquery = {version = "^3.5.0", extras = ["prod"]}
 build123d = {git = "https://github.com/gumyr/build123d.git"}
 
 # Override a valid version
-cadquery = "^2.2.0"
-casadi = "3.5.6pre2"
+cadquery = "^2.3.1"
 
-[[tool.poetry.source]]
-name = "mirrors"
-url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
-default = true
-secondary = false
+#[[tool.poetry.source]]
+#name = "mirrors"
+#url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+#priority = "default"
 
 [build-system]
 requires = ["poetry-core"]
