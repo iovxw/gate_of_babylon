@@ -1,0 +1,16 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "iovxw", email = "iovxw@outlook.com"},
+]
+dependencies = [
+    "build123d @ git+https://github.com/gumyr/build123d",
+    "ocp-vscode>=1.2.2",
+    "pip>=23.2.1", # OCP CAD Viewer need pip to check installed packages
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "UNLICENSE"}
+
