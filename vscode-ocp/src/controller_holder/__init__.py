@@ -21,13 +21,11 @@ with BuildPart() as holder:
         offset(bottom.sketch,amount=2)
     with BuildSketch(Plane.XY.offset(14)):
         offset(top.sketch,amount=2)
-    loft()
+    outer = loft()
     add(inner, mode=Mode.SUBTRACT)
-    with BuildSketch(Plane.XZ.offset(11/2)) as opening:
-        add(inner.faces().sort_by(Axis.Y).first)
-        x=opening.edges().filter_by(Axis.Y)
-        show(x)
-    extrude(until=Until.LAST, mode=Mode.SUBTRACT)
+    opening_face1 = inner.faces().sort_by(Axis.Y).first
+    opening_face2 = outer.faces().sort_by(Axis.Y).first
+    loft([opening_face1, opening_face2], mode=Mode.SUBTRACT)
 
 show(holder)
 
