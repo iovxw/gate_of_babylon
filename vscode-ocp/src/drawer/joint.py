@@ -1,4 +1,5 @@
 import args
+from build123d import *
 
 
 class HalfJoint:
@@ -27,6 +28,23 @@ class HalfJoint:
         self.other_width = other_width
         self.other_locs = other_locs
         self.is_b = is_b
+
+
+class JointHoles(BaseSketchObject):
+    def __init__(
+        self,
+        joint: HalfJoint,
+        rotation: float = 0,
+        align: tuple[Align, Align] = (Align.CENTER, Align.CENTER),
+        mode: Mode = Mode.SUBTRACT,
+    ):
+        with BuildSketch() as r:
+            with Locations(*[(x, 0) for x in joint.other_locs]):
+                Rectangle(joint.other_width, args.sheet_thickness)
+            if joint.is_b:
+                with Locations(*[(x, 0) for x in joint.locs]):
+                    Circle(args.screw_hole_r)
+        super().__init__(obj=r.sketch, rotation=rotation, align=align, mode=mode)
 
 
 class DrawerJoint:
