@@ -20,13 +20,13 @@ shelf_size = (
     box_size_outer[1] + args.box2shelf_spacing + args.sheet_thickness,
 )
 layerboard_y_joint = DrawerJoint(3, shelf_size[1] - args.sheet_thickness * 2)
+layerboard_void_x = shelf_size[0] / 2 + args.drill_bit_size * 3 / 2
 
 with BuildSketch() as layerboard:
     add(make_panel(shelf_size, (Mode.SUBTRACT, None), layerboard_y_joint.a_half()))
     with Locations((0, 50)):
-        drawerx1_bottom_x_sacing = shelf_size[0] / 2 + args.drill_bit_size * 3 / 2
         Rectangle(
-            drawerx1_bottom_x_sacing,
+            layerboard_void_x,
             shelf_size[1] - args.sheet_thickness,
             mode=Mode.SUBTRACT,
         )
@@ -128,21 +128,21 @@ show(top_panel_builder.part, render_joints=True)
 # %%
 boxes = [
     (
-        DrawerBox((args.box_size_inner[0], args.box_size_inner[1], h)).part,
+        DrawerBox((args.box_size_inner[0], args.box_size_inner[1], h)),
         copy.copy(layerboard_builder.part),
     )
     for h in args.box_height_list
 ]
 for i, (box, layerboard_part) in enumerate(boxes):
     layerboard_part.label = f"layerboard{i}"
-    box.label = f"box{i}"
+    box.part.label = f"box{i}"
     side_panel_left_builder.part.joints[f"layerboard{i}"].connect_to(
         layerboard_part.joints["left_side"]
     )
     layerboard_part.joints["right_side"].connect_to(
         side_panel_right_builder.part.joints[f"layerboard{i}"]
     )
-    layerboard_part.joints["box"].connect_to(box.joints["layerboard"])
+    layerboard_part.joints["box"].connect_to(box.part.joints["layerboard"])
 
 side_panel_left_builder.part.joints["top_left"].connect_to(
     top_panel_builder.part.joints["top_left"]
@@ -154,38 +154,9 @@ comp = Compound(
         side_panel_right_builder.part,
         top_panel_builder.part,
     ]
-    + [box for box, _ in boxes]
+    + [box.part for box, _ in boxes]
     + [l for _, l in boxes]
 )
 show(comp, render_joints=True)
-# %%
-with BuildSketch() as r:
-    with Locations(
-        (0, 0),
-        Location(
-            (
-                drawerx1_bottom_x_sacing - args.drill_bit_size,
-                50 + args.drill_bit_size,
-                0,
-            ),
-            (0, 0, 180),
-        ),
-        Location(
-            (
-                -(drawerx1_bottom_x_sacing - args.drill_bit_size),
-                50 + args.drill_bit_size,
-                0,
-            ),
-            (0, 0, 180),
-        ),
-    ):
-        add(layerboard.sketch.moved(Location((0, -args.sheet_thickness / 4, 0))))
-show(r)
-exporter = ExportDXF()
-exporter.add_layer(
-    "Layer 1",
-)
-exporter.add_shape(r.sketch, layer="Layer 1")
-exporter.write("/tmp/output.dxf")
 
 # %%
