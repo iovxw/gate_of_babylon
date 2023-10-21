@@ -2,6 +2,7 @@
 from build123d import *
 from ocp_vscode import *
 import copy
+import math
 
 import shelf
 import args
@@ -11,7 +12,33 @@ set_defaults(reset_camera=Camera.KEEP, helper_scale=5)
 # %%
 # 把手用布条
 
-show(shelf.comp)
+show(shelf.comp, render_joints=True)
+
+# %%
+with BuildSketch() as layerboards:
+    board = shelf.layerboard.sketch
+    board_bbox = board.bounding_box()
+    board = board.moved(Location((-board_bbox.min.X, -board_bbox.min.Y, 0)))
+    with Locations(
+        *[
+            ((board_bbox.size.X + args.drill_bit_size) * i, 0)
+            for i in range(0, math.floor(len(shelf.boxes) / 2))
+        ]
+    ):
+        add(board)
+    with Locations(
+        *[
+            (
+                (board_bbox.size.X + args.drill_bit_size) * i
+                + board_bbox.size.X / 2
+                - args.drill_bit_size / 2,
+                board_bbox.size.Y + 50 - args.drill_bit_size / 2,
+            )
+            for i in range(0, math.ceil(len(shelf.boxes) / 2))
+        ]
+    ):
+        add(board, rotation=180)
+show(layerboards)
 
 
 # %%
@@ -31,29 +58,30 @@ def arrange(
     spacing: float = args.drill_bit_size,
 ) -> Sketch:
     sketchs = [Plane(s.face()).to_local_coords(s) for s in sketchs]
-    sketchs.sort(key=lambda s: s.bounding_box().size.Y)
+    for s in sketchs:
+        bbox = s.bounding_box()
+        s.move(Location((-bbox.min.X, -bbox.min.Y)))
+    sketchs.sort(key=lambda s: (s.bounding_box().size.Y, s.bounding_box().size.X))
     x, y = 0, 0
     current_row_y_max = 0
     with BuildSketch() as r:
         while len(sketchs) > 0:
             s = sketchs.pop(0)
             bbox = s.bounding_box()
-            if bbox.size.Y > current_row_y_max:
-                current_row_y_max = bbox.size.Y
             if x + bbox.size.X > sheet_size[0]:
                 s2 = find_sketch(sketchs, (sheet_size[0] - x, current_row_y_max))
                 if s2:
                     sketchs.insert(0, s)
-                    s = s2
-                    bbox = s2.bounding_box()
+                    sketchs.insert(0, s2)
                 else:
                     x = 0
                     y += current_row_y_max + spacing
-                    current_row_y_max = bbox.size.Y
-            s = s.moved(Location((-bbox.min.X, -bbox.min.Y)))
+                    sketchs.insert(0, s)
+                continue
+            if bbox.size.Y > current_row_y_max:
+                current_row_y_max = bbox.size.Y
             loc = Location((x, y))
             s.move(Location((x, y)))
-            print(x,y, bbox.size.X, bbox.size.Y, current_row_y_max, (-bbox.min.X, -bbox.min.Y))
             x += bbox.size.X + spacing
             add(s)
     return r.sketch
@@ -64,34 +92,19 @@ fronts = [box.front_sketch for box in boxes]
 backs = [box.back_sketch for box in boxes]
 sides = [box.side_sketch for box in boxes] * 2
 r = arrange(
-    [shelf.side_panel.sketch, shelf.side_panel.sketch, shelf.top_panel.sketch]
+    [
+        shelf.side_panel.sketch,
+        shelf.side_panel.sketch,
+        shelf.top_panel.sketch,
+        layerboards.sketch,
+    ]
+    + fronts
+    + backs
     + sides
 )
 show(r, Rectangle(1200, 2440, align=(Align.MIN, Align.MIN)))
 
 # %%
-with BuildSketch() as r:
-    with Locations(
-        (0, 0),
-        Location(
-            (
-                drawerx1_bottom_x_sacing - args.drill_bit_size,
-                50 + args.drill_bit_size,
-                0,
-            ),
-            (0, 0, 180),
-        ),
-        Location(
-            (
-                -(drawerx1_bottom_x_sacing - args.drill_bit_size),
-                50 + args.drill_bit_size,
-                0,
-            ),
-            (0, 0, 180),
-        ),
-    ):
-        add(layerboard.sketch.moved(Location((0, -args.sheet_thickness / 4, 0))))
-show(r)
 exporter = ExportDXF()
 exporter.add_layer(
     "Layer 1",
