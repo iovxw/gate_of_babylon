@@ -24,19 +24,19 @@ class DrawerBox:
 
         self.bottom_sketch = make_panel(
             (outer_size[0], outer_size[1]),
-            self.bottom_x_joint.a_half(),
-            self.bottom_y_joint.a_half(),
+            self.bottom_x_joint.tenon(),
+            self.bottom_y_joint.tenon(),
         )
         self.front_back_joint = DrawerJoint(1, outer_size[2])
         self.side_sketch = make_panel(
             (outer_size[2], outer_size[1]),
-            self.front_back_joint.a_half(),
-            (self.bottom_y_joint.b_half(), None),
+            self.front_back_joint.tenon(),
+            (self.bottom_y_joint.mortise(), None),
         )
         self.back_sketch = make_panel(
             (outer_size[0], outer_size[2]),
-            (self.bottom_x_joint.b_half(), None),
-            self.front_back_joint.b_half(),
+            (self.bottom_x_joint.mortise(), None),
+            self.front_back_joint.mortise(),
         )
         with BuildSketch() as front:
             Rectangle(

@@ -96,6 +96,7 @@ r = arrange(
         shelf.side_panel.sketch,
         shelf.side_panel.sketch,
         shelf.top_panel.sketch,
+        shelf.back_panel.sketch,
         layerboards.sketch,
     ]
     + fronts

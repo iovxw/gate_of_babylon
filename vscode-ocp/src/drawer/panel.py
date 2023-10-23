@@ -2,13 +2,13 @@ from build123d import *
 from ocp_vscode import *
 
 import args
-from joint import HalfJoint, JointHoles
+from joint import DrawerJoint, JointHoles
 
 
 def make_panel(
     panel_size: tuple[float, float],
-    x_joints: HalfJoint | tuple[HalfJoint, HalfJoint],
-    y_joints: HalfJoint | tuple[HalfJoint, HalfJoint],
+    x_joints: DrawerJoint | tuple[DrawerJoint, DrawerJoint],
+    y_joints: DrawerJoint | tuple[DrawerJoint, DrawerJoint],
     sheet_thicness: float = args.sheet_thickness,
 ) -> Sketch:
     if x_joints.__class__ is not tuple:
@@ -50,5 +50,6 @@ if __name__ == "__main__":
     f3 = make_panel((300, 450), None, (Mode.SUBTRACT, None))
     f4 = make_panel((300, 450), (Mode.SUBTRACT, None), None)
     f5 = make_panel((300, 450), (None, Mode.SUBTRACT), None)
-    f6 = make_panel((300, 450), DrawerJoint(2, 300).b_half(), None)
+    f6 = make_panel((300, 450), DrawerJoint(2, 200).tenon(), None)
+    f7 = make_panel((300, 450), DrawerJoint(2, 200).mortise(), None)
     show_all()

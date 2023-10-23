@@ -23,7 +23,7 @@ layerboard_y_joint = DrawerJoint(3, shelf_size[1] - args.sheet_thickness * 2)
 layerboard_void_x = shelf_size[0] / 2 + args.drill_bit_size * 3 / 2
 
 with BuildSketch() as layerboard:
-    add(make_panel(shelf_size, (Mode.SUBTRACT, None), layerboard_y_joint.a_half()))
+    add(make_panel(shelf_size, Mode.SUBTRACT, layerboard_y_joint.tenon()))
     with Locations((0, 50)):
         Rectangle(
             layerboard_void_x,
@@ -43,24 +43,38 @@ shelf_layerboard_pos = [
 ]
 shelf_layerboard_pos = [pos - shelf_height / 2 for pos in shelf_layerboard_pos]
 side2top_joint = DrawerJoint(3, shelf_size[1])
+back2side_joint = DrawerJoint(8, shelf_height - args.sheet_thickness * 2)
+back2top_joint = DrawerJoint(2, shelf_size[0] - args.sheet_thickness * 2)
+back2layerboard_screw_pos = [
+    (x, y)
+    for x in [-(shelf_size[0] / 2- args.sheet_thickness*2), shelf_size[0] / 2- args.sheet_thickness*2]
+    for y in shelf_layerboard_pos
+]
 
 with BuildSketch(Plane.XZ) as side_panel:
     add(
         make_panel(
             (shelf_size[1], shelf_height),
-            (None, side2top_joint.a_half()),
-            (Mode.SUBTRACT, None),
+            (None, side2top_joint.tenon()),
+            (Mode.SUBTRACT, back2side_joint.mortise()),
         )
     )
     for i, y in enumerate(shelf_layerboard_pos):
         with Locations((0, y)):
-            JointHoles(layerboard_y_joint.b_half())
+            JointHoles(layerboard_y_joint.mortise())
 show(side_panel)
 
 # %%
 with BuildSketch() as top_panel:
-    add(make_panel(shelf_size, None, side2top_joint.b_half()))
+    add(make_panel(shelf_size, (None, back2top_joint.mortise()), side2top_joint.mortise()))
 show(top_panel)
+
+# %%
+with BuildSketch() as back_panel:
+    add(make_panel((shelf_size[0], shelf_height), (None, back2top_joint.tenon()), back2side_joint.tenon()))
+    with Locations(*back2layerboard_screw_pos) as pos:
+        Circle(args.screw_hole_r, mode=Mode.SUBTRACT)
+show(back_panel)
 
 # %%
 with BuildPart() as layerboard_builder:
@@ -123,8 +137,25 @@ with BuildPart() as top_panel_builder:
             (shelf_size[0] / 2, 0, args.sheet_thickness), (0, 0, 180)
         ),
     )
+    RigidJoint(
+        "top_back",
+        joint_location=Location(
+            (0, shelf_size[1] / 2, args.sheet_thickness), (0, 0, 0)
+        ),
+    )
 
 show(top_panel_builder.part, render_joints=True)
+
+# %%
+with BuildPart() as back_panel_builder:
+    extrude(back_panel.sketch, args.sheet_thickness)
+    RigidJoint(
+        "top_back",
+        joint_location=Location(
+            (0, shelf_height / 2, 0), (-90, 0, 0)
+        ),
+    )
+show(back_panel_builder.part, render_joints=True)
 # %%
 boxes = [
     (
@@ -147,12 +178,16 @@ for i, (box, layerboard_part) in enumerate(boxes):
 side_panel_left_builder.part.joints["top_left"].connect_to(
     top_panel_builder.part.joints["top_left"]
 )
+top_panel_builder.part.joints["top_back"].connect_to(
+    back_panel_builder.part.joints["top_back"]
+)
 
 comp = Compound(
     children=[
         side_panel_left_builder.part,
         side_panel_right_builder.part,
         top_panel_builder.part,
+        back_panel_builder.part,
     ]
     + [box.part for box, _ in boxes]
     + [l for _, l in boxes]
