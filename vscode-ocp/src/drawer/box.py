@@ -5,6 +5,7 @@ import copy
 import args
 from joint import DrawerJoint
 from panel import make_panel
+
 set_defaults(reset_camera=Camera.KEEP, helper_scale=5)
 
 

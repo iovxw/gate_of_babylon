@@ -43,8 +43,10 @@ def make_panel(
                     JointHoles(x_joints[i], rotation=0)
     return r.sketch
 
+
 if __name__ == "__main__":
     from joint import DrawerJoint
+
     f1 = make_panel((300, 450), None, None)
     f2 = make_panel((300, 450), None, (None, Mode.SUBTRACT))
     f3 = make_panel((300, 450), None, (Mode.SUBTRACT, None))

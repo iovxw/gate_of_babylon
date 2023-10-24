@@ -19,7 +19,7 @@ class DrawerJoint:
         self.tenon_width = tenon_width
         self.tenon_spacing = (
             self.panel_width - self.tenon_width * self.tenon_num
-        ) / self.screw_num 
+        ) / self.screw_num
         self.screw_locs = [
             (self.tenon_width + self.tenon_spacing) * n
             + self.tenon_spacing / 2

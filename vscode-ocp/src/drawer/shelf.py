@@ -47,7 +47,10 @@ back2side_joint = DrawerJoint(8, shelf_height - args.sheet_thickness * 2)
 back2top_joint = DrawerJoint(2, shelf_size[0] - args.sheet_thickness * 2)
 back2layerboard_screw_pos = [
     (x, y)
-    for x in [-(shelf_size[0] / 2- args.sheet_thickness*2), shelf_size[0] / 2- args.sheet_thickness*2]
+    for x in [
+        -(shelf_size[0] / 2 - args.sheet_thickness * 2),
+        shelf_size[0] / 2 - args.sheet_thickness * 2,
+    ]
     for y in shelf_layerboard_pos
 ]
 
@@ -66,12 +69,22 @@ show(side_panel)
 
 # %%
 with BuildSketch() as top_panel:
-    add(make_panel(shelf_size, (None, back2top_joint.mortise()), side2top_joint.mortise()))
+    add(
+        make_panel(
+            shelf_size, (None, back2top_joint.mortise()), side2top_joint.mortise()
+        )
+    )
 show(top_panel)
 
 # %%
 with BuildSketch() as back_panel:
-    add(make_panel((shelf_size[0], shelf_height), (None, back2top_joint.tenon()), back2side_joint.tenon()))
+    add(
+        make_panel(
+            (shelf_size[0], shelf_height),
+            (None, back2top_joint.tenon()),
+            back2side_joint.tenon(),
+        )
+    )
     with Locations(*back2layerboard_screw_pos) as pos:
         Circle(args.screw_hole_r, mode=Mode.SUBTRACT)
 show(back_panel)
@@ -151,9 +164,7 @@ with BuildPart() as back_panel_builder:
     extrude(back_panel.sketch, args.sheet_thickness)
     RigidJoint(
         "top_back",
-        joint_location=Location(
-            (0, shelf_height / 2, 0), (-90, 0, 0)
-        ),
+        joint_location=Location((0, shelf_height / 2, 0), (-90, 0, 0)),
     )
 show(back_panel_builder.part, render_joints=True)
 # %%
