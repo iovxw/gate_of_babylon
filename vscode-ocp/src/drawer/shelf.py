@@ -1,4 +1,5 @@
 # %%
+import math
 from build123d import *
 from ocp_vscode import *
 import copy
@@ -43,16 +44,11 @@ shelf_layerboard_pos = [
 ]
 shelf_layerboard_pos = [pos - shelf_height / 2 for pos in shelf_layerboard_pos]
 side2top_joint = DrawerJoint(3, shelf_size[1])
-back2side_joint = DrawerJoint(8, shelf_height - args.sheet_thickness * 2)
+back2side_joint_num = math.ceil(shelf_height / 3 / args.tenon_width)
+back2side_joint = DrawerJoint(
+    back2side_joint_num, shelf_height - args.sheet_thickness * 2
+)
 back2top_joint = DrawerJoint(2, shelf_size[0] - args.sheet_thickness * 2)
-back2layerboard_screw_pos = [
-    (x, y)
-    for x in [
-        -(shelf_size[0] / 2 - args.sheet_thickness * 2),
-        shelf_size[0] / 2 - args.sheet_thickness * 2,
-    ]
-    for y in shelf_layerboard_pos
-]
 
 with BuildSketch(Plane.XZ) as side_panel:
     add(
@@ -77,6 +73,27 @@ with BuildSketch() as top_panel:
 show(top_panel)
 
 # %%
+layerboard_back_screw_x = (
+    (shelf_size[0] - args.sheet_thickness * 2 + layerboard_void_x) / 2 / 2
+)
+back2layerboard_screw_pos = [
+    (x, y)
+    for x in [
+        -layerboard_back_screw_x,
+        layerboard_back_screw_x,
+    ]
+    for y in shelf_layerboard_pos
+]
+back_hole_x = shelf_size[0] / 5
+back_holes_pos = [
+    (x, y+args.sheet_thickness+height/2)
+    for x in [
+        -back_hole_x,
+        back_hole_x,
+    ]
+    for y, height in zip(shelf_layerboard_pos,args.box_height_list[::-1])
+]
+
 with BuildSketch() as back_panel:
     add(
         make_panel(
@@ -87,6 +104,8 @@ with BuildSketch() as back_panel:
     )
     with Locations(*back2layerboard_screw_pos) as pos:
         Circle(args.screw_hole_r, mode=Mode.SUBTRACT)
+    with Locations(*back_holes_pos) as pos:
+        SlotOverall(35,15,mode=Mode.SUBTRACT)
 show(back_panel)
 
 # %%

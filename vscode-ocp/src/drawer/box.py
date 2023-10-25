@@ -5,6 +5,7 @@ import copy
 import args
 from joint import DrawerJoint
 from panel import make_panel
+import math
 
 set_defaults(reset_camera=Camera.KEEP, helper_scale=5)
 
@@ -20,15 +21,18 @@ class DrawerBox:
             inner_size[1] + sheet_thickness * 2,
             inner_size[2] + sheet_thickness,
         )
-        self.bottom_y_joint = DrawerJoint(3, inner_size[1])
-        self.bottom_x_joint = DrawerJoint(2, outer_size[0])
+        x_joint_num = math.ceil(inner_size[0] / 3 / args.tenon_width)
+        y_joint_num = math.ceil(inner_size[1] / 3 / args.tenon_width)
+        z_joint_num = math.ceil(inner_size[2] / 3 / args.tenon_width)
+        self.bottom_y_joint = DrawerJoint(y_joint_num, inner_size[1])
+        self.bottom_x_joint = DrawerJoint(x_joint_num, outer_size[0])
 
         self.bottom_sketch = make_panel(
             (outer_size[0], outer_size[1]),
             self.bottom_x_joint.tenon(),
             self.bottom_y_joint.tenon(),
         )
-        self.front_back_joint = DrawerJoint(1, outer_size[2])
+        self.front_back_joint = DrawerJoint(z_joint_num, outer_size[2])
         self.side_sketch = make_panel(
             (outer_size[2], outer_size[1]),
             self.front_back_joint.tenon(),
@@ -116,7 +120,10 @@ class DrawerBox:
 
 
 if __name__ == "__main__":
-    b = DrawerBox(
+    b1 = DrawerBox(
         (args.box_size_inner[0], args.box_size_inner[1], args.box_height_list[0])
-    )
-    show(b.part, b.part.joints["layerboard"].symbol, render_joints=True)
+    ).part
+    b2 = DrawerBox(
+        (args.box_size_inner[0], args.box_size_inner[1], args.box_height_list[-1])
+    ).part
+    show_all(render_joints=True)

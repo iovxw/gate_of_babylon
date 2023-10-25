@@ -11,7 +11,7 @@ class DrawerJoint:
         self,
         tenon_num: int,
         panel_width: float,
-        tenon_width: float = args.joint_a_width,
+        tenon_width: float = args.tenon_width,
     ) -> None:
         self.tenon_num = tenon_num
         self.screw_num = tenon_num + 1

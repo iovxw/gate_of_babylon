@@ -1,7 +1,7 @@
-drill_bit_size = 5 + 0.1
+drill_bit_size = 4
 sheet_thickness = 15
 screw_hole_r = 2 / 2
 box2shelf_spacing = 1
-box_size_inner = (210, 300)
-box_height_list = [80, 80, 160, 160, 240]
-joint_a_width = 40
+box_size_inner = (220, 320)
+box_height_list = [70, 70, 70, 70, 130, 130, 200]
+tenon_width = 40
