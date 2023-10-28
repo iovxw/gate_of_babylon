@@ -133,11 +133,11 @@ r = arrange(
         shelf.top_panel.sketch,
         shelf.back_panel.sketch,
         layerboards.sketch,
-        Rectangle(shelf.shelf_height, 100),
     ]
     + fronts
     + backs
     + sides
+    , sheet_size=(1210, 2430)
 )
 show(r, Rectangle(1220, 2440, align=(Align.MIN, Align.MIN)))
 
