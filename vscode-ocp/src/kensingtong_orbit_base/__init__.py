@@ -9,8 +9,8 @@ set_defaults(reset_camera=Camera.KEEP)
 # %%
 wall_thickness = 1.5
 infill_thickness = 1.5
-infill_hex_d = 100
-loc = Location((0, 0, 20), (-5, -15, 0))
+infill_hex_d = 10
+loc = Location((0, 0, 17), (0, -10, 0))
 
 hole_y_pos = 47.7
 hole_r = 15 / 2
@@ -28,7 +28,6 @@ s2 = Spline(*[(-x, y) for x, y in pts])
 with BuildSketch() as bottom_joint:
     SlotArc(s1, joint_thickness)
     SlotArc(s2, joint_thickness)
-
 with BuildSketch() as top_joint:
     with Locations((0, hole_y_pos)):
         Circle(hole_r)
